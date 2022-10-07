@@ -2,7 +2,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SavePersonCommand } from '../impl/save-person.command';
-import { Person } from 'src/entities/person';
+import { Person } from '../../../../entities/person';
 
 @CommandHandler(SavePersonCommand)
 export class SavePersonHandler implements ICommandHandler<SavePersonCommand> {
@@ -11,5 +11,6 @@ export class SavePersonHandler implements ICommandHandler<SavePersonCommand> {
   async execute(command: SavePersonCommand) {
     const { person } = command;
     await this.repo.insert(person);
+    return person;
   }
 }

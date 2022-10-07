@@ -1,6 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Person } from '../../../entities/person';
+import { Person } from '../../../../entities/person';
 import { Repository } from 'typeorm';
 import { GetPersonQuery } from '../impl/get-person';
 

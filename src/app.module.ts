@@ -1,19 +1,24 @@
-import { Module, ValidationPipe } from '@nestjs/common';
+import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Person } from './entities/person';
-import { PersonModule } from './person/person.module';
-import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { PersonModule } from './modules/person/person.module';
+import { APP_PIPE } from '@nestjs/core';
+import { AuthModule } from './modules/auth/auth.module';
+import { SuperUser } from './entities/superuser';
+const cookieSession = require('cookie-session');
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'db.sqlite',
-      entities: [Person],
+      database: process.env.NODE_ENV === 'test' ? 'test.sqlite' : 'db.sqlite',
       synchronize: true,
+      entities: [Person, SuperUser],
     }),
     PersonModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
@@ -24,4 +29,8 @@ import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(cookieSession({ keys: ['asdfg'] })).forRoutes('*');
+  }
+}
